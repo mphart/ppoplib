@@ -15,12 +15,13 @@ public class Layer {
     Matrix biasGradients;
     IActivation activation;
 
-    public Layer(int in, int out, ActivationType act){
+    public Layer(int in, int out, IActivation act){
         nodesIn = in;
         nodesOut = out;
         weights = new Matrix(out, in);
         biases = new Matrix(out, 1);
-        this.activation = Activation.getActivation(act);
+        this.activation = act;
+        clearGradients();
     }
 
     public void randomizeLayer(Random rand){

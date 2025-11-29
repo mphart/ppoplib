@@ -3,29 +3,26 @@ package org.ppoplib.ppo.nn;
 import org.ppoplib.ppo.act.Activation;
 import org.ppoplib.ppo.act.ActivationType;
 import org.ppoplib.ppo.act.IActivation;
-
 import java.util.Random;
 
 public class NeuralNet {
     protected int[] layerSizes;
-    protected Layer[] layers;
     protected int numInputs;
     protected int numOutputs;
-    protected IActivation inputActivation = new Activation.Sigmoid();
-    protected IActivation outputActivation = new Activation.Sigmoid();
+    protected IActivation activation = new Activation.Sigmoid();
+    protected Layer[] layers;
 
-    public NeuralNet(int[] layerSizes, ActivationType inAct, ActivationType outAct){
-        this.layerSizes = layerSizes;
-        layers = new Layer[layerSizes.length - 1];
+    public NeuralNet(int inputNodes, int outputNodes, int[] hiddenLayerSizes, ActivationType actType){
+        layerSizes = new int[hiddenLayerSizes.length + 2];
+        layerSizes[0] = inputNodes;
+        System.arraycopy(hiddenLayerSizes, 0, layerSizes, 1, hiddenLayerSizes.length);
+        layerSizes[layerSizes.length - 1] = outputNodes;
+        this.numInputs = inputNodes;
+        this.numOutputs = outputNodes;
+        this.activation = Activation.getActivation(actType);
         for(int i = 0; i < layerSizes.length - 1; i++){
-            ActivationType layerAct = i == layerSizes.length - 2 ? outAct : inAct;
-            layers[i] = new Layer(layerSizes[i], layerSizes[i+1], layerAct);
+            layers[i] = new Layer(layerSizes[i], layerSizes[i+1], this.activation);
         }
-
-        this.numInputs = layerSizes[0];
-        this.numOutputs = layerSizes[layerSizes.length - 1];
-        inputActivation = Activation.getActivation(inAct);
-        outputActivation = Activation.getActivation(outAct);
     }
 
     public void randomInit(Random rand){
